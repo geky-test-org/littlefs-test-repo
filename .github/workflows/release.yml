@@ -89,7 +89,8 @@ jobs:
             >> results.csv
           [ -e results/coverage.csv ] && \
             ./scripts/coverage.py -u results/coverage.csv -s \
-            | awk 'NR==2 {printf "Coverage,%.1f%% of %d lines\n",$4,$3}' \
+            | awk -F '[ /%]+' \
+              'NR==2 {printf "Coverage,%.1f%% of %d lines\n",$4,$3}' \
             >> results.csv
 
           [ -e results.csv ] || exit 0
