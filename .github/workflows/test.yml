@@ -139,9 +139,8 @@ jobs:
 #          make test TESTFLAGS+="-nrk \
 #            -DLFS2_READ_SIZE=11 -DLFS2_BLOCK_SIZE=704"
 
-      # upload coveragefor later coverage
+      # upload coverage for later coverage
       - name: upload-coverage
-        continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
           name: coverage
@@ -150,7 +149,6 @@ jobs:
 
       # update results
       - name: results-code
-        continue-on-error: true
         run: |
           mkdir -p results
           make clean
@@ -162,7 +160,6 @@ jobs:
               -DLFS2_NO_ERROR" \
             CODEFLAGS+="-o results/code-${{matrix.arch}}.csv"
       - name: results-code-readonly
-        continue-on-error: true
         run: |
           mkdir -p results
           make clean
@@ -175,7 +172,6 @@ jobs:
               -DLFS2_READONLY" \
             CODEFLAGS+="-o results/code-${{matrix.arch}}-readonly.csv"
       - name: results-code-threadsafe
-        continue-on-error: true
         run: |
           mkdir -p results
           make clean
@@ -188,7 +184,6 @@ jobs:
               -DLFS2_THREADSAFE" \
             CODEFLAGS+="-o results/code-${{matrix.arch}}-threadsafe.csv"
       - name: results-code-migrate
-        continue-on-error: true
         run: |
           mkdir -p results
           make clean
@@ -201,7 +196,6 @@ jobs:
               -DLFS2_MIGRATE" \
             CODEFLAGS+="-o results/code-${{matrix.arch}}-migrate.csv"
       - name: upload-results
-        continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
           name: results
@@ -209,7 +203,6 @@ jobs:
       # limit reporting to Thumb, otherwise there would be too many numbers
       # flying around for the results to be easily readable
       - name: collect-status
-        continue-on-error: true
         if: matrix.arch == 'thumb'
         run: |
           mkdir -p status
@@ -239,7 +232,6 @@ jobs:
                 echo $f | sed -n 's/.*code-.*-\(.*\).csv/-\1/p').json
           done
       - name: upload-status
-        continue-on-error: true
         if: matrix.arch == 'thumb'
         uses: actions/upload-artifact@v2
         with:
@@ -384,7 +376,6 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     needs: [test]
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - name: install
@@ -392,7 +383,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -qq python3 python3-pip lcov
           sudo pip3 install toml
-      # yes we continue-on-error on every step, continue-on-error
+      # yes we continue-on-error nearly every step, continue-on-error
       # at job level apparently still marks a job as failed, which isn't
       # what we want
       - uses: actions/download-artifact@v2
@@ -409,12 +400,10 @@ jobs:
           ./scripts/coverage.py results/coverage.info -o results/coverage.csv
       - name: upload-results
         uses: actions/upload-artifact@v2
-        continue-on-error: true
         with:
           name: results
           path: results
       - name: collect-status
-        continue-on-error: true
         run: |
           mkdir -p status
           [ -e results/coverage.csv ] || exit 0
@@ -441,7 +430,6 @@ jobs:
             | tee status/coverage.json
       - name: upload-status
         uses: actions/upload-artifact@v2
-        continue-on-error: true
         with:
           name: status
           path: status
