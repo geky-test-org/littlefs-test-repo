@@ -26,6 +26,15 @@ jobs:
           # need all tags
           fetch-depth: 0
 
+      # try to get results from tests
+      - uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
+        with:
+          workflow: ${{github.event.workflow_run.name}}
+          run_id: ${{github.event.workflow_run.id}}
+          name: results
+          path: results
+
       - name: find-version
         run: |
           # rip version from lfs2.h
@@ -59,6 +68,50 @@ jobs:
           echo "LFS2_PREV_VERSION=$LFS2_PREV_VERSION"
           echo "LFS2_PREV_VERSION=$LFS2_PREV_VERSION" >> $GITHUB_ENV
 
+      # try to find results from tests
+      - name: collect-results
+        run: |
+          [ -e results/code.csv ] && \
+            ./scripts/code.py -u results/code.csv -s \
+            | awk 'NR==2 {printf "Code size,%d B",$2}' \
+            >> results.csv
+          [ -e results/code-readonly.csv ] && \
+            ./scripts/code.py -u results/code-readonly.csv -s \
+            | awk 'NR==2 {printf "Code size (readonly),%d B",$2}' \
+            >> results.csv
+          [ -e results/code-threadsafe.csv ] && \
+            ./scripts/code.py -u results/code-threadsafe.csv -s \
+            | awk 'NR==2 {printf "Code size (threadsafe),%d B",$2}' \
+            >> results.csv
+          [ -e results/code-migrate.csv ] && \
+            ./scripts/code.py -u results/code-migrate.csv -s \
+            | awk 'NR==2 {printf "Code size (migrate),%d B",$2}' \
+            >> results.csv
+          [ -e results/coverage.csv ] && \
+            ./scripts/coverage.py -u results/coverage.csv -s \
+            | awk 'NR==2 {printf "Coverage,%.1f%% of %d lines",$4,$3}' \
+            >> results.csv
+
+          [ -e results.csv ] || exit 0
+          awk -F ',' '
+            {label[NR]=$1; value[NR]=$2}
+            END {
+              for (r=1; r<=NR; r++) {printf "| %s ",label[r]}; printf "|\n";
+              for (r=1; r<=NR; r++) {printf "|--:"}; printf "|\n";
+              for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\n"}' \
+            results.csv > results.txt
+          echo "RESULTS:"
+          cat results.txt
+
+      # find changes from history
+      - name: collect-changes
+        run: |
+          [ ! -z "$LFS2_PREV_VERSION" ] || exit 0
+          git log --oneline "$LFS2_PREV_VERSION.." \
+            --grep='^Merge' --invert-grep > changes.txt
+          echo "CHANGES:"
+          cat changes.txt
+        
       # create and update major branches (vN and vN-prefix)
       - name: build-major-branches
         run: |
@@ -87,22 +140,24 @@ jobs:
       - name: build-release
         run: |
           # find changes since last release
-          if [ ! -z "$LFS2_PREV_VERSION" ]
-          then
-            export CHANGES="$(git log --oneline $LFS2_PREV_VERSION.. \
-              --grep='^Merge' --invert-grep)"
-            printf "CHANGES\n%s\n\n" "$CHANGES"
-          fi
+          #if [ ! -z "$LFS2_PREV_VERSION" ]
+          #then
+          #  export CHANGES="$(git log --oneline "$LFS2_PREV_VERSION.." \
+          #    --grep='^Merge' --invert-grep)"
+          #  printf "CHANGES\n%s\n\n" "$CHANGES"
+          #fi
 
           # create release and patch version tag (vN.N.N)
           # only draft if not a patch release
+          [ -e results.txt ] && export RESULTS="$(cat results.txt)"
+          [ -e changes.txt ] && export CHANGES="$(cat changes.txt)"
           curl -sS -H "authorization: token ${{secrets.BOT_TOKEN}}" \
             "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases" \
-            -d "$(jq -n '{
+            -d "$(jq -sR '{
               tag_name: env.LFS2_VERSION,
               name: env.LFS2_VERSION | sub("\\\\.0$"; ""),
               target_commitish: "${{github.event.workflow_run.head_sha}}",
               draft: env.LFS2_VERSION | endswith(".0"),
-              body: (env.CHANGES // "")}' \
+              body: (env.RESULTS + env.CHANGES + "")}' \
               | tee /dev/stderr)" > /dev/null
 
