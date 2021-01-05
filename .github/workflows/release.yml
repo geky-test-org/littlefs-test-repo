@@ -71,20 +71,20 @@ jobs:
       # try to find results from tests
       - name: collect-results
         run: |
-          [ -e results/code.csv ] && \
-            ./scripts/code.py -u results/code.csv -s \
+          [ -e results/code-thumb.csv ] && \
+            ./scripts/code.py -u results/code-thumb.csv -s \
             | awk 'NR==2 {printf "Code size,%d B\n",$2}' \
             >> results.csv
-          [ -e results/code-readonly.csv ] && \
-            ./scripts/code.py -u results/code-readonly.csv -s \
+          [ -e results/code-thumb-readonly.csv ] && \
+            ./scripts/code.py -u results/code-thumb-readonly.csv -s \
             | awk 'NR==2 {printf "Code size (readonly),%d B\n",$2}' \
             >> results.csv
-          [ -e results/code-threadsafe.csv ] && \
-            ./scripts/code.py -u results/code-threadsafe.csv -s \
+          [ -e results/code-thumb-threadsafe.csv ] && \
+            ./scripts/code.py -u results/code-thumb-threadsafe.csv -s \
             | awk 'NR==2 {printf "Code size (threadsafe),%d B\n",$2}' \
             >> results.csv
-          [ -e results/code-migrate.csv ] && \
-            ./scripts/code.py -u results/code-migrate.csv -s \
+          [ -e results/code-thumb-migrate.csv ] && \
+            ./scripts/code.py -u results/code-thumb-migrate.csv -s \
             | awk 'NR==2 {printf "Code size (migrate),%d B\n",$2}' \
             >> results.csv
           [ -e results/coverage.csv ] && \
@@ -93,7 +93,6 @@ jobs:
             >> results.csv
 
           [ -e results.csv ] || exit 0
-          cat results.csv
           awk -F ',' '
             {label[NR]=$1; value[NR]=$2}
             END {
