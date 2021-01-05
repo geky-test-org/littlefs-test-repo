@@ -95,10 +95,11 @@ jobs:
           # only draft if not a patch release
           curl -sS -H "authorization: token ${{secrets.BOT_TOKEN}}" \
             -X POST "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases" \
-            -d "$(jq -nc '{
+            -d "$(jq -n '{
               tag_name: env.LFS2_VERSION,
               name: env.LFS2_VERSION | sub("\\\\.0$"; ""),
               target_commitish: "${{github.event.workflow_run.head_sha}}",
               draft: env.LFS2_VERSION | endswith(".0"),
-              body: env.CHANGES // ""}')"
+              body: (env.CHANGES // "")}' \
+              | tee /dev/stderr)"
 
