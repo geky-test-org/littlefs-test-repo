@@ -77,19 +77,19 @@ jobs:
             >> results.csv
           [ -e results/code-readonly.csv ] && \
             ./scripts/code.py -u results/code-readonly.csv -s \
-            | awk 'NR==2 {printf "Code size (readonly),%d B",$2}' \
+            | awk 'NR==2 {printf "Code size (readonly),%d B\n",$2}' \
             >> results.csv
           [ -e results/code-threadsafe.csv ] && \
             ./scripts/code.py -u results/code-threadsafe.csv -s \
-            | awk 'NR==2 {printf "Code size (threadsafe),%d B",$2}' \
+            | awk 'NR==2 {printf "Code size (threadsafe),%d B\n",$2}' \
             >> results.csv
           [ -e results/code-migrate.csv ] && \
             ./scripts/code.py -u results/code-migrate.csv -s \
-            | awk 'NR==2 {printf "Code size (migrate),%d B",$2}' \
+            | awk 'NR==2 {printf "Code size (migrate),%d B\n",$2}' \
             >> results.csv
           [ -e results/coverage.csv ] && \
             ./scripts/coverage.py -u results/coverage.csv -s \
-            | awk 'NR==2 {printf "Coverage,%.1f%% of %d lines",$4,$3}' \
+            | awk 'NR==2 {printf "Coverage,%.1f%% of %d lines\n",$4,$3}' \
             >> results.csv
 
           [ -e results.csv ] || exit 0
@@ -97,9 +97,10 @@ jobs:
           awk -F ',' '
             {label[NR]=$1; value[NR]=$2}
             END {
-              for (r=1; r<=NR; r++) {printf "| %s ",label[r]}; printf "|\\n";
-              for (r=1; r<=NR; r++) {printf "|--:"}; printf "|\\n";
-              for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\\n"}' \
+              for (r=1; r<=NR; r++) {printf "| %s ",label[r]}; printf "|\n";
+              for (r=1; r<=NR; r++) {printf "|--:"}; printf "|\n";
+              for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\n";
+              printf "\n"}' \
             results.csv > results.txt
           echo "RESULTS:"
           cat results.txt
