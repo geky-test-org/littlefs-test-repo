@@ -93,12 +93,13 @@ jobs:
             >> results.csv
 
           [ -e results.csv ] || exit 0
+          cat results.csv
           awk -F ',' '
             {label[NR]=$1; value[NR]=$2}
             END {
-              for (r=1; r<=NR; r++) {printf "| %s ",label[r]}; printf "|\n";
-              for (r=1; r<=NR; r++) {printf "|--:"}; printf "|\n";
-              for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\n"}' \
+              for (r=1; r<=NR; r++) {printf "| %s ",label[r]}; printf "|\\n";
+              for (r=1; r<=NR; r++) {printf "|--:"}; printf "|\\n";
+              for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\\n"}' \
             results.csv > results.txt
           echo "RESULTS:"
           cat results.txt
