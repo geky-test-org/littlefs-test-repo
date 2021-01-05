@@ -73,7 +73,7 @@ jobs:
         run: |
           [ -e results/code.csv ] && \
             ./scripts/code.py -u results/code.csv -s \
-            | awk 'NR==2 {printf "Code size,%d B",$2}' \
+            | awk 'NR==2 {printf "Code size,%d B\n",$2}' \
             >> results.csv
           [ -e results/code-readonly.csv ] && \
             ./scripts/code.py -u results/code-readonly.csv -s \
@@ -99,8 +99,7 @@ jobs:
             END {
               for (r=1; r<=NR; r++) {printf "| %s ",label[r]}; printf "|\n";
               for (r=1; r<=NR; r++) {printf "|--:"}; printf "|\n";
-              for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\n";
-              printf "\n"}' \
+              for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\n"}' \
             results.csv > results.txt
           echo "RESULTS:"
           cat results.txt
@@ -157,9 +156,10 @@ jobs:
             "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases" \
             -d "$(jq -sR '{
               tag_name: env.LFS2_VERSION,
-              name: env.LFS2_VERSION | sub("\\\\.0$"; ""),
+              name: env.LFS2_VERSION | rtrimstr(".0"),
               target_commitish: "${{github.event.workflow_run.head_sha}}",
               draft: env.LFS2_VERSION | endswith(".0"),
-              body: (env.RESULTS + env.CHANGES + "")}' \
+              body: [env.RESULTS, env.CHANGES | select(.)]
+                | join("\\\\n\\\\n")}' \
               | tee /dev/stderr)" > /dev/null
 
