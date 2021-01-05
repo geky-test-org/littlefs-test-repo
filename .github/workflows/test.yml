@@ -76,13 +76,14 @@ jobs:
       # make sure example can at least compile
       - name: test-example
         run: |
-          sed -n '/``` c/,/```/{/```/d; p}' README.md > test.c && \
+          sed -n '/``` c/,/```/{/```/d; p}' README.md > test.c
           make all CFLAGS+=" \
             -Duser_provided_block_device_read=NULL \
             -Duser_provided_block_device_prog=NULL \
             -Duser_provided_block_device_erase=NULL \
             -Duser_provided_block_device_sync=NULL \
             -include stdio.h"
+          rm test.c
 
 #      # test configurations
 #      # normal+reentrant tests
@@ -212,9 +213,8 @@ jobs:
         if: matrix.arch == 'thumb'
         run: |
           mkdir -p status
-          for f in results/code*.csv
+          for f in $(shopt -s nullglob ; echo results/code*.csv)
           do
-            [ -e "$f" ] || continue
             export STEP="results-code$(
               echo $f | sed -n 's/.*code-.*-\(.*\).csv/-\1/p')"
             export CONTEXT="results / code$(
@@ -225,7 +225,6 @@ jobs:
                 | select(.context == env.CONTEXT).description
                 | capture(\"Code size is (?<result>[0-9]+)\").result" \
               || echo 0)"
-            echo $PREV
             export DESCRIPTION="$(./scripts/code.py -u $f -s | awk '
               NR==2 {printf "Code size is %d B",$2}
               NR==2 && ENVIRON["PREV"] != 0 {

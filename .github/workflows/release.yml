@@ -113,7 +113,7 @@ jobs:
           cat changes.txt
         
       # create and update major branches (vN and vN-prefix)
-      - name: build-major-branches
+      - name: create-major-branches
         run: |
           # create major branch
           git branch "v$LFS2_VERSION_MAJOR" HEAD
@@ -137,23 +137,15 @@ jobs:
             "v$LFS2_VERSION_MAJOR-prefix"
 
       # build release notes
-      - name: build-release
+      - name: create-release
         run: |
-          # find changes since last release
-          #if [ ! -z "$LFS2_PREV_VERSION" ]
-          #then
-          #  export CHANGES="$(git log --oneline "$LFS2_PREV_VERSION.." \
-          #    --grep='^Merge' --invert-grep)"
-          #  printf "CHANGES\n%s\n\n" "$CHANGES"
-          #fi
-
           # create release and patch version tag (vN.N.N)
           # only draft if not a patch release
           [ -e results.txt ] && export RESULTS="$(cat results.txt)"
           [ -e changes.txt ] && export CHANGES="$(cat changes.txt)"
           curl -sS -H "authorization: token ${{secrets.BOT_TOKEN}}" \
             "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases" \
-            -d "$(jq -sR '{
+            -d "$(jq -n '{
               tag_name: env.LFS2_VERSION,
               name: env.LFS2_VERSION | rtrimstr(".0"),
               target_commitish: "${{github.event.workflow_run.head_sha}}",
