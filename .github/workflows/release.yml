@@ -11,7 +11,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
     # need to manually check for success
-    if: ${{github.event.workflow_run.conclusion == 'success'}}
+    if: ${{
+      github.event.workflow_run.conclusion == 'success'
+      }}
 
     steps:
       - uses: actions/checkout@v2

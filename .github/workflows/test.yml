@@ -405,11 +405,16 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -qq python3 python3-pip lcov
           sudo pip3 install toml
+      # yes we continue-on-error on every step, continue-on-error
+      # at job level apparently still marks a job as failed, which isn't
+      # what we want
       - uses: actions/download-artifact@v2
+        continue-on-error: true
         with:
           name: coverage
           path: coverage
       - name: results-coverage
+        continue-on-error: true
         run: |
           mkdir -p results
           lcov $(for f in coverage/*.info ; do echo "-a $f" ; done) \
