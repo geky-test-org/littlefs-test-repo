@@ -396,7 +396,6 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     needs: [test]
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - name: install
@@ -404,23 +403,29 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -qq python3 python3-pip lcov
           sudo pip3 install toml
+      # yes we use continue-on-error for every step, but continue-on-error
+      # at job level apparently still marks a job as failed, which isn't
+      # what we want
       - uses: actions/download-artifact@v2
+        continue-on-error: true
         with:
           name: coverage
           path: coverage
       - name: results-coverage
+        continue-on-error: true
         run: |
           mkdir -p results
           lcov $(for f in coverage/*.info ; do echo "-a $f" ; done) \
             -o results/coverage.info
           ./scripts/coverage.py results/coverage.info -o results/coverage.csv
       - name: upload-results
-        continue-on-error: true
         uses: actions/upload-artifact@v2
+        continue-on-error: true
         with:
           name: results
           path: results
       - name: collect-status
+        continue-on-error: true
         run: |
           mkdir -p status
           export STEP="results-coverage"
@@ -445,6 +450,7 @@ jobs:
             | tee status/coverage.json
       - name: upload-status
         uses: actions/upload-artifact@v2
+        continue-on-error: true
         with:
           name: status
           path: status
