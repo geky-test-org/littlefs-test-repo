@@ -11,9 +11,9 @@ endif
 
 # overridable target/src/tools/flags/etc
 ifneq ($(wildcard test.c main.c),)
-TARGET ?= $(BUILDDIR)lfs
+TARGET ?= $(BUILDDIR)lfs2
 else
-TARGET ?= $(BUILDDIR)lfs.a
+TARGET ?= $(BUILDDIR)lfs2.a
 endif
 
 
@@ -35,7 +35,7 @@ else
 override CFLAGS += -Os
 endif
 ifdef TRACE
-override CFLAGS += -DLFS_YES_TRACE
+override CFLAGS += -DLFS2_YES_TRACE
 endif
 override CFLAGS += -I.
 override CFLAGS += -std=c99 -Wall -pedantic
@@ -92,7 +92,7 @@ coverage:
 -include $(DEP)
 .SUFFIXES:
 
-$(BUILDDIR)lfs: $(OBJ)
+$(BUILDDIR)lfs2: $(OBJ)
 	$(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
 
 $(BUILDDIR)%.a: $(OBJ)

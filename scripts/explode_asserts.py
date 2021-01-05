@@ -3,8 +3,8 @@
 import re
 import sys
 
-PATTERN = ['LFS_ASSERT', 'assert']
-PREFIX = 'LFS'
+PATTERN = ['LFS2_ASSERT', 'assert']
+PREFIX = 'LFS2'
 MAXWIDTH = 16
 
 ASSERT = "__{PREFIX}_ASSERT_{TYPE}_{COMP}"

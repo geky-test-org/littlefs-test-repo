@@ -2,198 +2,198 @@
 define.MEDIUMSIZE = [32, 2048]
 define.LARGESIZE = 8192
 code = '''
-    lfs_format(&lfs, &cfg) => 0;
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldynoop",
-            LFS_O_WRONLY | LFS_O_CREAT) => 0;
+    lfs2_format(&lfs2, &cfg) => 0;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldynoop",
+            LFS2_O_WRONLY | LFS2_O_CREAT) => 0;
 
     strcpy((char*)buffer, "hair");
     size = strlen((char*)buffer);
-    for (lfs_off_t j = 0; j < LARGESIZE; j += size) {
-        lfs_file_write(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < LARGESIZE; j += size) {
+        lfs2_file_write(&lfs2, &file, buffer, size) => size;
     }
-    lfs_file_size(&lfs, &file) => LARGESIZE;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
     
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldynoop", LFS_O_RDWR) => 0;
-    lfs_file_size(&lfs, &file) => LARGESIZE;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldynoop", LFS2_O_RDWR) => 0;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
 
-    lfs_file_truncate(&lfs, &file, MEDIUMSIZE) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_file_truncate(&lfs2, &file, MEDIUMSIZE) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldynoop", LFS_O_RDONLY) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldynoop", LFS2_O_RDONLY) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
 
     size = strlen("hair");
-    for (lfs_off_t j = 0; j < MEDIUMSIZE; j += size) {
-        lfs_file_read(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < MEDIUMSIZE; j += size) {
+        lfs2_file_read(&lfs2, &file, buffer, size) => size;
         memcmp(buffer, "hair", size) => 0;
     }
-    lfs_file_read(&lfs, &file, buffer, size) => 0;
+    lfs2_file_read(&lfs2, &file, buffer, size) => 0;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 '''
 
 [[case]] # truncate and read
 define.MEDIUMSIZE = [32, 2048]
 define.LARGESIZE = 8192
 code = '''
-    lfs_format(&lfs, &cfg) => 0;
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldyread",
-            LFS_O_WRONLY | LFS_O_CREAT) => 0;
+    lfs2_format(&lfs2, &cfg) => 0;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldyread",
+            LFS2_O_WRONLY | LFS2_O_CREAT) => 0;
 
     strcpy((char*)buffer, "hair");
     size = strlen((char*)buffer);
-    for (lfs_off_t j = 0; j < LARGESIZE; j += size) {
-        lfs_file_write(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < LARGESIZE; j += size) {
+        lfs2_file_write(&lfs2, &file, buffer, size) => size;
     }
-    lfs_file_size(&lfs, &file) => LARGESIZE;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldyread", LFS_O_RDWR) => 0;
-    lfs_file_size(&lfs, &file) => LARGESIZE;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldyread", LFS2_O_RDWR) => 0;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
 
-    lfs_file_truncate(&lfs, &file, MEDIUMSIZE) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_file_truncate(&lfs2, &file, MEDIUMSIZE) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
 
     size = strlen("hair");
-    for (lfs_off_t j = 0; j < MEDIUMSIZE; j += size) {
-        lfs_file_read(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < MEDIUMSIZE; j += size) {
+        lfs2_file_read(&lfs2, &file, buffer, size) => size;
         memcmp(buffer, "hair", size) => 0;
     }
-    lfs_file_read(&lfs, &file, buffer, size) => 0;
+    lfs2_file_read(&lfs2, &file, buffer, size) => 0;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldyread", LFS_O_RDONLY) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldyread", LFS2_O_RDONLY) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
 
     size = strlen("hair");
-    for (lfs_off_t j = 0; j < MEDIUMSIZE; j += size) {
-        lfs_file_read(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < MEDIUMSIZE; j += size) {
+        lfs2_file_read(&lfs2, &file, buffer, size) => size;
         memcmp(buffer, "hair", size) => 0;
     }
-    lfs_file_read(&lfs, &file, buffer, size) => 0;
+    lfs2_file_read(&lfs2, &file, buffer, size) => 0;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 '''
 
 [[case]] # write, truncate, and read
 code = '''
-    lfs_format(&lfs, &cfg) => 0;
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "sequence",
-            LFS_O_RDWR | LFS_O_CREAT | LFS_O_TRUNC) => 0;
+    lfs2_format(&lfs2, &cfg) => 0;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "sequence",
+            LFS2_O_RDWR | LFS2_O_CREAT | LFS2_O_TRUNC) => 0;
 
-    size = lfs_min(lfs.cfg->cache_size, sizeof(buffer)/2);
-    lfs_size_t qsize = size / 4;
+    size = lfs2_min(lfs2.cfg->cache_size, sizeof(buffer)/2);
+    lfs2_size_t qsize = size / 4;
     uint8_t *wb = buffer;
     uint8_t *rb = buffer + size;
-    for (lfs_off_t j = 0; j < size; ++j) {
+    for (lfs2_off_t j = 0; j < size; ++j) {
         wb[j] = j;
     }
 
     /* Spread sequence over size */
-    lfs_file_write(&lfs, &file, wb, size) => size;
-    lfs_file_size(&lfs, &file) => size;
-    lfs_file_tell(&lfs, &file) => size;
+    lfs2_file_write(&lfs2, &file, wb, size) => size;
+    lfs2_file_size(&lfs2, &file) => size;
+    lfs2_file_tell(&lfs2, &file) => size;
 
-    lfs_file_seek(&lfs, &file, 0, LFS_SEEK_SET) => 0;
-    lfs_file_tell(&lfs, &file) => 0;
+    lfs2_file_seek(&lfs2, &file, 0, LFS2_SEEK_SET) => 0;
+    lfs2_file_tell(&lfs2, &file) => 0;
 
     /* Chop off the last quarter */
-    lfs_size_t trunc = size - qsize;
-    lfs_file_truncate(&lfs, &file, trunc) => 0;
-    lfs_file_tell(&lfs, &file) => 0;
-    lfs_file_size(&lfs, &file) => trunc;
+    lfs2_size_t trunc = size - qsize;
+    lfs2_file_truncate(&lfs2, &file, trunc) => 0;
+    lfs2_file_tell(&lfs2, &file) => 0;
+    lfs2_file_size(&lfs2, &file) => trunc;
 
     /* Read should produce first 3/4 */
-    lfs_file_read(&lfs, &file, rb, size) => trunc;
+    lfs2_file_read(&lfs2, &file, rb, size) => trunc;
     memcmp(rb, wb, trunc) => 0;
 
     /* Move to 1/4 */
-    lfs_file_size(&lfs, &file) => trunc;
-    lfs_file_seek(&lfs, &file, qsize, LFS_SEEK_SET) => qsize;
-    lfs_file_tell(&lfs, &file) => qsize;
+    lfs2_file_size(&lfs2, &file) => trunc;
+    lfs2_file_seek(&lfs2, &file, qsize, LFS2_SEEK_SET) => qsize;
+    lfs2_file_tell(&lfs2, &file) => qsize;
 
     /* Chop to 1/2 */
     trunc -= qsize;
-    lfs_file_truncate(&lfs, &file, trunc) => 0;
-    lfs_file_tell(&lfs, &file) => qsize;
-    lfs_file_size(&lfs, &file) => trunc;
+    lfs2_file_truncate(&lfs2, &file, trunc) => 0;
+    lfs2_file_tell(&lfs2, &file) => qsize;
+    lfs2_file_size(&lfs2, &file) => trunc;
     
     /* Read should produce second quarter */
-    lfs_file_read(&lfs, &file, rb, size) => trunc - qsize;
+    lfs2_file_read(&lfs2, &file, rb, size) => trunc - qsize;
     memcmp(rb, wb + qsize, trunc - qsize) => 0;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 '''
 
 [[case]] # truncate and write
 define.MEDIUMSIZE = [32, 2048]
 define.LARGESIZE = 8192
 code = '''
-    lfs_format(&lfs, &cfg) => 0;
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldywrite",
-            LFS_O_WRONLY | LFS_O_CREAT) => 0;
+    lfs2_format(&lfs2, &cfg) => 0;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldywrite",
+            LFS2_O_WRONLY | LFS2_O_CREAT) => 0;
 
     strcpy((char*)buffer, "hair");
     size = strlen((char*)buffer);
-    for (lfs_off_t j = 0; j < LARGESIZE; j += size) {
-        lfs_file_write(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < LARGESIZE; j += size) {
+        lfs2_file_write(&lfs2, &file, buffer, size) => size;
     }
-    lfs_file_size(&lfs, &file) => LARGESIZE;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldywrite", LFS_O_RDWR) => 0;
-    lfs_file_size(&lfs, &file) => LARGESIZE;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldywrite", LFS2_O_RDWR) => 0;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
 
-    lfs_file_truncate(&lfs, &file, MEDIUMSIZE) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_file_truncate(&lfs2, &file, MEDIUMSIZE) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
 
     strcpy((char*)buffer, "bald");
     size = strlen((char*)buffer);
-    for (lfs_off_t j = 0; j < MEDIUMSIZE; j += size) {
-        lfs_file_write(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < MEDIUMSIZE; j += size) {
+        lfs2_file_write(&lfs2, &file, buffer, size) => size;
     }
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 
-    lfs_mount(&lfs, &cfg) => 0;
-    lfs_file_open(&lfs, &file, "baldywrite", LFS_O_RDONLY) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_mount(&lfs2, &cfg) => 0;
+    lfs2_file_open(&lfs2, &file, "baldywrite", LFS2_O_RDONLY) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
 
     size = strlen("bald");
-    for (lfs_off_t j = 0; j < MEDIUMSIZE; j += size) {
-        lfs_file_read(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < MEDIUMSIZE; j += size) {
+        lfs2_file_read(&lfs2, &file, buffer, size) => size;
         memcmp(buffer, "bald", size) => 0;
     }
-    lfs_file_read(&lfs, &file, buffer, size) => 0;
+    lfs2_file_read(&lfs2, &file, buffer, size) => 0;
 
-    lfs_file_close(&lfs, &file) => 0;
-    lfs_unmount(&lfs) => 0;
+    lfs2_file_close(&lfs2, &file) => 0;
+    lfs2_unmount(&lfs2) => 0;
 '''
 
 [[case]] # truncate write under powerloss
@@ -202,64 +202,64 @@ define.MEDIUMSIZE = [32, 1024]
 define.LARGESIZE = 2048
 reentrant = true
 code = '''
-    err = lfs_mount(&lfs, &cfg);
+    err = lfs2_mount(&lfs2, &cfg);
     if (err) {
-        lfs_format(&lfs, &cfg) => 0;
-        lfs_mount(&lfs, &cfg) => 0;
+        lfs2_format(&lfs2, &cfg) => 0;
+        lfs2_mount(&lfs2, &cfg) => 0;
     }
-    err = lfs_file_open(&lfs, &file, "baldy", LFS_O_RDONLY);
-    assert(!err || err == LFS_ERR_NOENT);
+    err = lfs2_file_open(&lfs2, &file, "baldy", LFS2_O_RDONLY);
+    assert(!err || err == LFS2_ERR_NOENT);
     if (!err) {
-        size = lfs_file_size(&lfs, &file);
+        size = lfs2_file_size(&lfs2, &file);
         assert(size == 0 ||
                 size == LARGESIZE ||
                 size == MEDIUMSIZE ||
                 size == SMALLSIZE);
-        for (lfs_off_t j = 0; j < size; j += 4) {
-            lfs_file_read(&lfs, &file, buffer, 4) => 4;
+        for (lfs2_off_t j = 0; j < size; j += 4) {
+            lfs2_file_read(&lfs2, &file, buffer, 4) => 4;
             assert(memcmp(buffer, "hair", 4) == 0 ||
                    memcmp(buffer, "bald", 4) == 0 ||
                    memcmp(buffer, "comb", 4) == 0);
         }
-        lfs_file_close(&lfs, &file) => 0;
+        lfs2_file_close(&lfs2, &file) => 0;
     }
 
-    lfs_file_open(&lfs, &file, "baldy",
-            LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC) => 0;
-    lfs_file_size(&lfs, &file) => 0;
+    lfs2_file_open(&lfs2, &file, "baldy",
+            LFS2_O_WRONLY | LFS2_O_CREAT | LFS2_O_TRUNC) => 0;
+    lfs2_file_size(&lfs2, &file) => 0;
     strcpy((char*)buffer, "hair");
     size = strlen((char*)buffer);
-    for (lfs_off_t j = 0; j < LARGESIZE; j += size) {
-        lfs_file_write(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < LARGESIZE; j += size) {
+        lfs2_file_write(&lfs2, &file, buffer, size) => size;
     }
-    lfs_file_size(&lfs, &file) => LARGESIZE;
-    lfs_file_close(&lfs, &file) => 0;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
+    lfs2_file_close(&lfs2, &file) => 0;
 
-    lfs_file_open(&lfs, &file, "baldy", LFS_O_RDWR) => 0;
-    lfs_file_size(&lfs, &file) => LARGESIZE;
-    lfs_file_truncate(&lfs, &file, MEDIUMSIZE) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
+    lfs2_file_open(&lfs2, &file, "baldy", LFS2_O_RDWR) => 0;
+    lfs2_file_size(&lfs2, &file) => LARGESIZE;
+    lfs2_file_truncate(&lfs2, &file, MEDIUMSIZE) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
     strcpy((char*)buffer, "bald");
     size = strlen((char*)buffer);
-    for (lfs_off_t j = 0; j < MEDIUMSIZE; j += size) {
-        lfs_file_write(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < MEDIUMSIZE; j += size) {
+        lfs2_file_write(&lfs2, &file, buffer, size) => size;
     }
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
-    lfs_file_close(&lfs, &file) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
+    lfs2_file_close(&lfs2, &file) => 0;
 
-    lfs_file_open(&lfs, &file, "baldy", LFS_O_RDWR) => 0;
-    lfs_file_size(&lfs, &file) => MEDIUMSIZE;
-    lfs_file_truncate(&lfs, &file, SMALLSIZE) => 0;
-    lfs_file_size(&lfs, &file) => SMALLSIZE;
+    lfs2_file_open(&lfs2, &file, "baldy", LFS2_O_RDWR) => 0;
+    lfs2_file_size(&lfs2, &file) => MEDIUMSIZE;
+    lfs2_file_truncate(&lfs2, &file, SMALLSIZE) => 0;
+    lfs2_file_size(&lfs2, &file) => SMALLSIZE;
     strcpy((char*)buffer, "comb");
     size = strlen((char*)buffer);
-    for (lfs_off_t j = 0; j < SMALLSIZE; j += size) {
-        lfs_file_write(&lfs, &file, buffer, size) => size;
+    for (lfs2_off_t j = 0; j < SMALLSIZE; j += size) {
+        lfs2_file_write(&lfs2, &file, buffer, size) => size;
     }
-    lfs_file_size(&lfs, &file) => SMALLSIZE;
-    lfs_file_close(&lfs, &file) => 0;
+    lfs2_file_size(&lfs2, &file) => SMALLSIZE;
+    lfs2_file_close(&lfs2, &file) => 0;
 
-    lfs_unmount(&lfs) => 0;
+    lfs2_unmount(&lfs2) => 0;
 '''
 
 [[case]] # more aggressive general truncation tests
@@ -270,10 +270,10 @@ define.LARGESIZE = 8192
 code = '''
     #define COUNT 5
     const struct {
-        lfs_off_t startsizes[COUNT];
-        lfs_off_t startseeks[COUNT];
-        lfs_off_t hotsizes[COUNT];
-        lfs_off_t coldsizes[COUNT];
+        lfs2_off_t startsizes[COUNT];
+        lfs2_off_t startseeks[COUNT];
+        lfs2_off_t hotsizes[COUNT];
+        lfs2_off_t coldsizes[COUNT];
     } configs[] = {
         // cold shrinking
         {{2*LARGESIZE, 2*LARGESIZE, 2*LARGESIZE, 2*LARGESIZE, 2*LARGESIZE},
@@ -307,88 +307,88 @@ code = '''
          {2*LARGESIZE, 2*LARGESIZE, 2*LARGESIZE, 2*LARGESIZE, 2*LARGESIZE}},
     };
 
-    const lfs_off_t *startsizes = configs[CONFIG].startsizes;
-    const lfs_off_t *startseeks = configs[CONFIG].startseeks;
-    const lfs_off_t *hotsizes   = configs[CONFIG].hotsizes;
-    const lfs_off_t *coldsizes  = configs[CONFIG].coldsizes;
+    const lfs2_off_t *startsizes = configs[CONFIG].startsizes;
+    const lfs2_off_t *startseeks = configs[CONFIG].startseeks;
+    const lfs2_off_t *hotsizes   = configs[CONFIG].hotsizes;
+    const lfs2_off_t *coldsizes  = configs[CONFIG].coldsizes;
 
-    lfs_format(&lfs, &cfg) => 0;
-    lfs_mount(&lfs, &cfg) => 0;
+    lfs2_format(&lfs2, &cfg) => 0;
+    lfs2_mount(&lfs2, &cfg) => 0;
 
     for (unsigned i = 0; i < COUNT; i++) {
         sprintf(path, "hairyhead%d", i);
-        lfs_file_open(&lfs, &file, path,
-                LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC) => 0;
+        lfs2_file_open(&lfs2, &file, path,
+                LFS2_O_WRONLY | LFS2_O_CREAT | LFS2_O_TRUNC) => 0;
 
         strcpy((char*)buffer, "hair");
         size = strlen((char*)buffer);
-        for (lfs_off_t j = 0; j < startsizes[i]; j += size) {
-            lfs_file_write(&lfs, &file, buffer, size) => size;
+        for (lfs2_off_t j = 0; j < startsizes[i]; j += size) {
+            lfs2_file_write(&lfs2, &file, buffer, size) => size;
         }
-        lfs_file_size(&lfs, &file) => startsizes[i];
+        lfs2_file_size(&lfs2, &file) => startsizes[i];
 
         if (startseeks[i] != startsizes[i]) {
-            lfs_file_seek(&lfs, &file,
-                    startseeks[i], LFS_SEEK_SET) => startseeks[i];
+            lfs2_file_seek(&lfs2, &file,
+                    startseeks[i], LFS2_SEEK_SET) => startseeks[i];
         }
 
-        lfs_file_truncate(&lfs, &file, hotsizes[i]) => 0;
-        lfs_file_size(&lfs, &file) => hotsizes[i];
+        lfs2_file_truncate(&lfs2, &file, hotsizes[i]) => 0;
+        lfs2_file_size(&lfs2, &file) => hotsizes[i];
 
-        lfs_file_close(&lfs, &file) => 0;
+        lfs2_file_close(&lfs2, &file) => 0;
     }
 
-    lfs_unmount(&lfs) => 0;
+    lfs2_unmount(&lfs2) => 0;
 
-    lfs_mount(&lfs, &cfg) => 0;
+    lfs2_mount(&lfs2, &cfg) => 0;
 
     for (unsigned i = 0; i < COUNT; i++) {
         sprintf(path, "hairyhead%d", i);
-        lfs_file_open(&lfs, &file, path, LFS_O_RDWR) => 0;
-        lfs_file_size(&lfs, &file) => hotsizes[i];
+        lfs2_file_open(&lfs2, &file, path, LFS2_O_RDWR) => 0;
+        lfs2_file_size(&lfs2, &file) => hotsizes[i];
 
         size = strlen("hair");
-        lfs_off_t j = 0;
+        lfs2_off_t j = 0;
         for (; j < startsizes[i] && j < hotsizes[i]; j += size) {
-            lfs_file_read(&lfs, &file, buffer, size) => size;
+            lfs2_file_read(&lfs2, &file, buffer, size) => size;
             memcmp(buffer, "hair", size) => 0;
         }
 
         for (; j < hotsizes[i]; j += size) {
-            lfs_file_read(&lfs, &file, buffer, size) => size;
+            lfs2_file_read(&lfs2, &file, buffer, size) => size;
             memcmp(buffer, "\0\0\0\0", size) => 0;
         }
 
-        lfs_file_truncate(&lfs, &file, coldsizes[i]) => 0;
-        lfs_file_size(&lfs, &file) => coldsizes[i];
+        lfs2_file_truncate(&lfs2, &file, coldsizes[i]) => 0;
+        lfs2_file_size(&lfs2, &file) => coldsizes[i];
 
-        lfs_file_close(&lfs, &file) => 0;
+        lfs2_file_close(&lfs2, &file) => 0;
     }
 
-    lfs_unmount(&lfs) => 0;
+    lfs2_unmount(&lfs2) => 0;
 
-    lfs_mount(&lfs, &cfg) => 0;
+    lfs2_mount(&lfs2, &cfg) => 0;
 
     for (unsigned i = 0; i < COUNT; i++) {
         sprintf(path, "hairyhead%d", i);
-        lfs_file_open(&lfs, &file, path, LFS_O_RDONLY) => 0;
-        lfs_file_size(&lfs, &file) => coldsizes[i];
+        lfs2_file_open(&lfs2, &file, path, LFS2_O_RDONLY) => 0;
+        lfs2_file_size(&lfs2, &file) => coldsizes[i];
 
         size = strlen("hair");
-        lfs_off_t j = 0;
+        lfs2_off_t j = 0;
         for (; j < startsizes[i] && j < hotsizes[i] && j < coldsizes[i];
                 j += size) {
-            lfs_file_read(&lfs, &file, buffer, size) => size;
+            lfs2_file_read(&lfs2, &file, buffer, size) => size;
             memcmp(buffer, "hair", size) => 0;
         }
 
         for (; j < coldsizes[i]; j += size) {
-            lfs_file_read(&lfs, &file, buffer, size) => size;
+            lfs2_file_read(&lfs2, &file, buffer, size) => size;
             memcmp(buffer, "\0\0\0\0", size) => 0;
         }
 
-        lfs_file_close(&lfs, &file) => 0;
+        lfs2_file_close(&lfs2, &file) => 0;
     }
 
-    lfs_unmount(&lfs) => 0;
+    lfs2_unmount(&lfs2) => 0;
 '''
