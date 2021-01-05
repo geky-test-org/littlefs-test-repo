@@ -224,32 +224,32 @@ jobs:
         if: matrix.arch == 'thumb'
         run: |
           mkdir -p status
-          shopt -s nullglob
           for f in results/code*.csv
           do
-              export STEP="results-code$(
-                echo $f | sed -n 's/.*code-\(.*\).csv/-\1/p')"
-              export CONTEXT="results / code$(
-                echo $f | sed -n 's/.*code-\(.*\).csv/ (\1)/p')"
-              export PREV="$(curl -sS \
-                "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/status/master" \
-                | jq -re "select(.sha != env.GITHUB_SHA) | .statuses[]
-                  | select(.context == env.CONTEXT).description
-                  | capture(\"Code size is (?<result>[0-9]+)\").result" \
-                || echo 0)"
-              echo $PREV
-              export DESCRIPTION="$(./scripts/code.py -u $f -s | awk '
-                NR==2 {printf "Code size is %d B",$2}
-                NR==2 && ENVIRON["PREV"] != 0 {
-                  printf " (%+.1f%%)",100*($2-ENVIRON["PREV"])/$2}')"
-              jq -n '{
-                state: "success",
-                context: env.CONTEXT,
-                description: env.DESCRIPTION,
-                target_job: "${{github.job}} (${{matrix.arch}})",
-                target_step: env.STEP}' \
-                | tee status/code$(
-                  echo $f | sed -n 's/.*code-\(.*\).csv/-\1/p').json
+            [ -e "$f" ] || continue
+            export STEP="results-code$(
+              echo $f | sed -n 's/.*code-\(.*\).csv/-\1/p')"
+            export CONTEXT="results / code$(
+              echo $f | sed -n 's/.*code-\(.*\).csv/ (\1)/p')"
+            export PREV="$(curl -sS \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/status/master" \
+              | jq -re "select(.sha != env.GITHUB_SHA) | .statuses[]
+                | select(.context == env.CONTEXT).description
+                | capture(\"Code size is (?<result>[0-9]+)\").result" \
+              || echo 0)"
+            echo $PREV
+            export DESCRIPTION="$(./scripts/code.py -u $f -s | awk '
+              NR==2 {printf "Code size is %d B",$2}
+              NR==2 && ENVIRON["PREV"] != 0 {
+                printf " (%+.1f%%)",100*($2-ENVIRON["PREV"])/$2}')"
+            jq -n '{
+              state: "success",
+              context: env.CONTEXT,
+              description: env.DESCRIPTION,
+              target_job: "${{github.job}} (${{matrix.arch}})",
+              target_step: env.STEP}' \
+              | tee status/code$(
+                echo $f | sed -n 's/.*code-\(.*\).csv/-\1/p').json
           done
       - name: upload-status
         continue-on-error: true
@@ -283,7 +283,7 @@ jobs:
   # self-host with littlefs-fuse for a fuzz-like test
   fuse:
     runs-on: ubuntu-latest
-    if: ${{!endsWith(github.ref, '-prefix')}}
+    if: "!endsWith(github.ref, '-prefix')"
     steps:
       - uses: actions/checkout@v2
       - name: install
@@ -329,7 +329,7 @@ jobs:
   # test migration using littlefs-fuse
   migrate:
     runs-on: ubuntu-latest
-    if: ${{!endsWith(github.ref, '-prefix')}}
+    if: "!endsWith(github.ref, '-prefix')"
     steps:
       - uses: actions/checkout@v2
       - name: install
@@ -430,30 +430,28 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p status
-          if [ -e results/coverage.csv ]
-          then
-            export STEP="results-coverage"
-            export CONTEXT="results / coverage"
-            export PREV="$(curl -sS \
-              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/status/master" \
-              | jq -re "select(.sha != env.GITHUB_SHA) | .statuses[]
-                | select(.context == env.CONTEXT).description
-                | capture(\"Coverage is (?<result>[0-9\\\\.]+)\").result" \
-              || echo 0)"
-            export DESCRIPTION="$(
-              ./scripts/coverage.py -u results/coverage.csv -s \
-              | awk -F '[ /%]+' '
-                NR==2 {printf "Coverage is %.1f%% of %d lines",$4,$3}
-                NR==2 && ENVIRON["PREV"] != 0 {
-                  printf " (%+.1f%%)",$4-ENVIRON["PREV"]}')"
-            jq -n '{
-              state: "success",
-              context: env.CONTEXT,
-              description: env.DESCRIPTION,
-              target_job: "${{github.job}}",
-              target_step: env.STEP}' \
-              | tee status/coverage.json
-          fi
+          [ -e results/coverage.csv ] || exit 0
+          export STEP="results-coverage"
+          export CONTEXT="results / coverage"
+          export PREV="$(curl -sS \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/status/master" \
+            | jq -re "select(.sha != env.GITHUB_SHA) | .statuses[]
+              | select(.context == env.CONTEXT).description
+              | capture(\"Coverage is (?<result>[0-9\\\\.]+)\").result" \
+            || echo 0)"
+          export DESCRIPTION="$(
+            ./scripts/coverage.py -u results/coverage.csv -s \
+            | awk -F '[ /%]+' '
+              NR==2 {printf "Coverage is %.1f%% of %d lines",$4,$3}
+              NR==2 && ENVIRON["PREV"] != 0 {
+                printf " (%+.1f%%)",$4-ENVIRON["PREV"]}')"
+          jq -n '{
+            state: "success",
+            context: env.CONTEXT,
+            description: env.DESCRIPTION,
+            target_job: "${{github.job}}",
+            target_step: env.STEP}' \
+            | tee status/coverage.json
       - name: upload-status
         uses: actions/upload-artifact@v2
         continue-on-error: true
