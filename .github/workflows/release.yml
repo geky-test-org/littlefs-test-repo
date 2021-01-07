@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     # need to manually check for a couple things
     # - tests passed?
@@ -152,5 +152,18 @@ jobs:
               target_commitish: "${{github.event.workflow_run.head_sha}}",
               draft: env.LFS2_VERSION | endswith(".0"),
               body: [env.RESULTS, env.CHANGES | select(.)] | join("\n\n")}' \
+              | tee /dev/stderr)" > /dev/null
+
+      # trigger post-release in dependency repo, this indirection allows the
+      # dependency repo to be updated often without affecting this repo. At
+      # the time of this comment, the dependency repo is responsible for
+      # creating PRs for other dependent repos post-release.
+      - name: trigger-post-release
+        continue-on-error: true
+        run: |
+          curl -sS -H "authorization: token ${{secrets.BOT_TOKEN}}" \
+            "$GITHUB_API_URL/repos/${{secrets.POST_RELEASE_REPO}}/dispatches" \
+            -d "$(jq -n '{
+              event_type: "post-release"}' \
               | tee /dev/stderr)" > /dev/null
 
