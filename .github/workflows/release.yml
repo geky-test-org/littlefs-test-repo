@@ -144,7 +144,7 @@ jobs:
           # only draft if not a patch release
           [ -e results.txt ] && export RESULTS="$(cat results.txt)"
           [ -e changes.txt ] && export CHANGES="$(cat changes.txt)"
-          curl -sS -H "authorization: token ${{secrets.BOT_TOKEN}}" \
+          curl -sS -X POST -H "authorization: token ${{secrets.BOT_TOKEN}}" \
             "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases" \
             -d "$(jq -n '{
               tag_name: env.LFS2_VERSION,
@@ -161,9 +161,12 @@ jobs:
       - name: trigger-post-release
         continue-on-error: true
         run: |
-          curl -sS -H "authorization: token ${{secrets.BOT_TOKEN}}" \
+          curl -sS -X POST -H "authorization: token ${{secrets.BOT_TOKEN}}" \
             "$GITHUB_API_URL/repos/${{secrets.POST_RELEASE_REPO}}/dispatches" \
             -d "$(jq -n '{
-              event_type: "post-release"}' \
+              event_type: "post-release",
+              client_payload: {
+                repo: env.GITHUB_REPOSITORY,
+                version: env.LFS2_VERSION}}' \
               | tee /dev/stderr)" > /dev/null
 

@@ -43,7 +43,7 @@ jobs:
                         | select(.name == env.TARGET_STEP)
                         | "#step:\(.number):0") // "")'))"
             # update status
-            curl -sS -H "authorization: token ${{secrets.BOT_TOKEN}}" \
+            curl -sS -X POST -H "authorization: token ${{secrets.BOT_TOKEN}}" \
               "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/statuses/`
                 `${{github.event.workflow_run.head_sha}}" \
               -d "$(jq -n '{
