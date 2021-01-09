@@ -1,7 +1,8 @@
 name: post-release
 on:
   release:
-    types: [published]
+    branches: [master]
+    types: [published, released]
 
 jobs:
   post-release:
