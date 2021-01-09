@@ -2,11 +2,10 @@ name: post-release
 on:
   release:
     branches: [master]
-    types: [published, released]
+    types: [released]
 
 jobs:
   post-release:
-    if: "!github.event.release.prerelease"
     runs-on: ubuntu-18.04
     steps:
       # trigger post-release in dependency repo, this indirection allows the
@@ -22,6 +21,6 @@ jobs:
               event_type: "post-release",
               client_payload: {
                 repo: env.GITHUB_REPOSITORY,
-                version: env.GITHUB_REF}}' \
+                version: "${{github.event.release.tag_name}}"}' \
               | tee /dev/stderr)"
 
