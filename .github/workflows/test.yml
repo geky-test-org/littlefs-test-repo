@@ -214,9 +214,9 @@ jobs:
               echo $f | sed -n 's/.*code-.*-\(.*\).csv/ (\1)/p')"
             export PREV="$(curl -sS \
               "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/status/master" \
-              | jq -re "select(.sha != env.GITHUB_SHA) | .statuses[]
+              | jq -re 'select(.sha != env.GITHUB_SHA) | .statuses[]
                 | select(.context == env.CONTEXT).description
-                | capture(\"Code size is (?<result>[0-9]+)\").result" \
+                | capture("Code size is (?<result>[0-9]+)").result' \
               || echo 0)"
             export DESCRIPTION="$(./scripts/code.py -u $f -s | awk '
               NR==2 {printf "Code size is %d B",$2}
@@ -411,9 +411,9 @@ jobs:
           export CONTEXT="results / coverage"
           export PREV="$(curl -sS \
             "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/status/master" \
-            | jq -re "select(.sha != env.GITHUB_SHA) | .statuses[]
+            | jq -re 'select(.sha != env.GITHUB_SHA) | .statuses[]
               | select(.context == env.CONTEXT).description
-              | capture(\"Coverage is (?<result>[0-9\\\\.]+)\").result" \
+              | capture("Coverage is (?<result>[0-9\\.]+)").result' \
             || echo 0)"
           export DESCRIPTION="$(
             ./scripts/coverage.py -u results/coverage.csv -s \
