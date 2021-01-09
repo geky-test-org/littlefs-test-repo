@@ -109,8 +109,8 @@ static int lfs2_bd_read(lfs2_t *lfs2,
 
 enum {
     LFS2_CMP_EQ = 0,
-    LFS2_CMP_LT = 111111,
-    LFS2_CMP_GT = 222222, // changed to increase code size
+    LFS2_CMP_LT = 1,
+    LFS2_CMP_GT = 2,
 };
 
 static int lfs2_bd_cmp(lfs2_t *lfs2,
