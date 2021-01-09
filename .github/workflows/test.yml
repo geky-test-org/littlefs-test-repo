@@ -183,18 +183,18 @@ jobs:
               -DLFS2_NO_ERROR \
               -DLFS2_THREADSAFE" \
             CODEFLAGS+="-o results/code-${{matrix.arch}}-threadsafe.csv"
-      - name: results-code-migrate
-        run: |
-          mkdir -p results
-          make clean
-          make code \
-            CFLAGS+=" \
-              -DLFS2_NO_ASSERT \
-              -DLFS2_NO_DEBUG \
-              -DLFS2_NO_WARN \
-              -DLFS2_NO_ERROR \
-              -DLFS2_MIGRATE" \
-            CODEFLAGS+="-o results/code-${{matrix.arch}}-migrate.csv"
+#      - name: results-code-migrate
+#        run: |
+#          mkdir -p results
+#          make clean
+#          make code \
+#            CFLAGS+=" \
+#              -DLFS2_NO_ASSERT \
+#              -DLFS2_NO_DEBUG \
+#              -DLFS2_NO_WARN \
+#              -DLFS2_NO_ERROR \
+#              -DLFS2_MIGRATE" \
+#            CODEFLAGS+="-o results/code-${{matrix.arch}}-migrate.csv"
       - name: upload-results
         uses: actions/upload-artifact@v2
         with:
@@ -220,8 +220,8 @@ jobs:
               || echo 0)"
             export DESCRIPTION="$(./scripts/code.py -u $f -s | awk '
               NR==2 {printf "Code size is %d B",$2}
-              NR==2 && ENVIRON["PREV"] != 0 {
-                printf " (%+.1f%%)",100*($2-ENVIRON["PREV"])/$2}')"
+              NR==2 && ENVIRON["PREV"]+0 != 0 {
+                printf " (%+.1f%%)",100*($2-ENVIRON["PREV"])/ENVIRON["PREV"]}')"
             jq -n '{
               state: "success",
               context: env.CONTEXT,
@@ -419,7 +419,7 @@ jobs:
             ./scripts/coverage.py -u results/coverage.csv -s \
             | awk -F '[ /%]+' '
               NR==2 {printf "Coverage is %.1f%% of %d lines",$4,$3}
-              NR==2 && ENVIRON["PREV"] != 0 {
+              NR==2 && ENVIRON["PREV"]+0 != 0 {
                 printf " (%+.1f%%)",$4-ENVIRON["PREV"]}')"
           jq -n '{
             state: "success",
