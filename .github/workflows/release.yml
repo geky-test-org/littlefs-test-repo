@@ -84,6 +84,7 @@ jobs:
                   select(.context == "results / code").description
                   | capture("Code size is (?<result>[0-9]+)").result' \
                 prev-results.json || echo 0)"
+            echo "$PREV"
             ./scripts/code.py -u results/code-thumb.csv -s | awk '
               NR==2 {printf "Code size,%d B",$2}
               NR==2 && ENVIRON["PREV"] != 0 {
