@@ -183,18 +183,18 @@ jobs:
               -DLFS2_NO_ERROR \
               -DLFS2_THREADSAFE" \
             CODEFLAGS+="-o results/code-${{matrix.arch}}-threadsafe.csv"
-#      - name: results-code-migrate
-#        run: |
-#          mkdir -p results
-#          make clean
-#          make code \
-#            CFLAGS+=" \
-#              -DLFS2_NO_ASSERT \
-#              -DLFS2_NO_DEBUG \
-#              -DLFS2_NO_WARN \
-#              -DLFS2_NO_ERROR \
-#              -DLFS2_MIGRATE" \
-#            CODEFLAGS+="-o results/code-${{matrix.arch}}-migrate.csv"
+      - name: results-code-migrate
+        run: |
+          mkdir -p results
+          make clean
+          make code \
+            CFLAGS+=" \
+              -DLFS2_NO_ASSERT \
+              -DLFS2_NO_DEBUG \
+              -DLFS2_NO_WARN \
+              -DLFS2_NO_ERROR \
+              -DLFS2_MIGRATE" \
+            CODEFLAGS+="-o results/code-${{matrix.arch}}-migrate.csv"
       - name: upload-results
         uses: actions/upload-artifact@v2
         with:
