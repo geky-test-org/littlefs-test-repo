@@ -12,9 +12,8 @@ jobs:
     # need to manually check for a couple things
     # - tests passed?
     # - we are the most recent commit on master?
-    if: |
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_sha == github.sha
+    if: ${{github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_sha == github.sha}}
 
     steps:
       - uses: actions/checkout@v2
@@ -108,8 +107,13 @@ jobs:
       - name: collect-changes
         run: |
           [ -n "$LFS2_PREV_VERSION" ] || exit 0
-          git log --oneline "$LFS2_PREV_VERSION.." \
-            --grep='^Merge' --invert-grep > changes.txt
+          # use explicit link to github commit so that release notes can
+          # be copied elsewhere
+          git log "$LFS2_PREV_VERSION.." \
+            --grep='^Merge' --invert-grep \
+            --format="format:[\`%h\`](`
+              `https://github.com/$GITHUB_REPOSITORY/commit/%h) %s" \
+            > changes.txt
           echo "CHANGES:"
           cat changes.txt
         

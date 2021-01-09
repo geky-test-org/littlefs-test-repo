@@ -38,7 +38,7 @@ jobs:
 
       # cross-compile with ARM Thumb (32-bit, little-endian)
       - name: install-thumb
-        if: matrix.arch == 'thumb'
+        if: ${{matrix.arch == 'thumb'}}
         run: |
           sudo apt-get install -qq \
             gcc-arm-linux-gnueabi \
@@ -50,7 +50,7 @@ jobs:
           qemu-arm -version
       # cross-compile with MIPS (32-bit, big-endian)
       - name: install-mips
-        if: matrix.arch == 'mips'
+        if: ${{matrix.arch == 'mips'}}
         run: |
           sudo apt-get install -qq \
             gcc-mips-linux-gnu \
@@ -62,7 +62,7 @@ jobs:
           qemu-mips -version
       # cross-compile with PowerPC (32-bit, big-endian)
       - name: install-powerpc
-        if: matrix.arch == 'powerpc'
+        if: ${{matrix.arch == 'powerpc'}}
         run: |
           sudo apt-get install -qq \
             gcc-powerpc-linux-gnu \
@@ -118,7 +118,7 @@ jobs:
 #      - name: test-byte-writes
 #        # it just takes too long to test byte-level writes when in qemu,
 #        # should be plenty covered by the other configurations
-#        if: matrix.arch == 'x86_64'
+#        if: ${{matrix.arch == 'x86_64'}}
 #        run: |
 #          make clean
 #          make test TESTFLAGS+="-nrk \
@@ -203,7 +203,7 @@ jobs:
       # limit reporting to Thumb, otherwise there would be too many numbers
       # flying around for the results to be easily readable
       - name: collect-status
-        if: matrix.arch == 'thumb'
+        if: ${{matrix.arch == 'thumb'}}
         run: |
           mkdir -p status
           for f in $(shopt -s nullglob ; echo results/code*.csv)
@@ -232,7 +232,7 @@ jobs:
                 echo $f | sed -n 's/.*code-.*-\(.*\).csv/-\1/p').json
           done
       - name: upload-status
-        if: matrix.arch == 'thumb'
+        if: ${{matrix.arch == 'thumb'}}
         uses: actions/upload-artifact@v2
         with:
           name: status
@@ -262,7 +262,7 @@ jobs:
   # self-host with littlefs-fuse for a fuzz-like test
   fuse:
     runs-on: ubuntu-18.04
-    if: "!endsWith(github.ref, '-prefix')"
+    if: ${{!endsWith(github.ref, '-prefix')}}
     steps:
       - uses: actions/checkout@v2
       - name: install
@@ -308,7 +308,7 @@ jobs:
   # test migration using littlefs-fuse
   migrate:
     runs-on: ubuntu-18.04
-    if: "!endsWith(github.ref, '-prefix')"
+    if: ${{!endsWith(github.ref, '-prefix')}}
     steps:
       - uses: actions/checkout@v2
       - name: install
