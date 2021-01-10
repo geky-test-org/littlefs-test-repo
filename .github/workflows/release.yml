@@ -160,7 +160,7 @@ jobs:
             > changes.txt
           echo "CHANGES:"
           cat changes.txt
-        
+
       # create and update major branches (vN and vN-prefix)
       - name: create-major-branches
         run: |
