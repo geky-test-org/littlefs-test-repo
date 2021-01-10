@@ -141,7 +141,7 @@ jobs:
             {label[NR]=$1; value[NR]=$2}
             END {
               for (r=1; r<=NR; r++) {printf "| %s ",label[r]}; printf "|\n";
-              for (r=1; r<=NR; r++) {printf "|--:"}; printf "|\n";
+              for (r=1; r<=NR; r++) {printf "|:--"}; printf "|\n";
               for (r=1; r<=NR; r++) {printf "| %s ",value[r]}; printf "|\n"}' \
             results.csv > results.txt
           echo "RESULTS:"
